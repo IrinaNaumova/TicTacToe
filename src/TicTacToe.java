@@ -9,12 +9,13 @@ public class TicTacToe {
     private static char[][] field;
     private static int fieldSizeX;
     private static int fieldSizeY;
+    private static int winStreak = 3;
     private static final Scanner SCANNER = new Scanner(System.in);
     private static final Random RANDOM = new Random();
 
     private static void initMap() {
-        fieldSizeX = 3;
-        fieldSizeY = 3;
+        fieldSizeX = 5;
+        fieldSizeY = 5;
         field = new char[fieldSizeY][fieldSizeX];
         for (int y = 0; y < fieldSizeY; y++) {
             for (int x = 0; x < fieldSizeX; x++) {
@@ -42,7 +43,7 @@ public class TicTacToe {
         int x;
         int y;
         do {
-            System.out.println("Введите координаты X и Y (от 1 до 3) через пробел >>>");
+            System.out.println("Введите координаты X и Y (от 1 до 5) через пробел >>>");
             x = SCANNER.nextInt() - 1;
             y = SCANNER.nextInt() - 1;
         } while (!isCellValid(x, y) || !isCellEmpty(x, y));
@@ -69,17 +70,65 @@ public class TicTacToe {
     }
 
     private static boolean checkWin(char c) {
-        if (field[0][0] == c && field[0][1] == c && field[0][2] == c) return true;
-        if (field[1][0] == c && field[1][1] == c && field[1][2] == c) return true;
-        if (field[2][0] == c && field[2][1] == c && field[2][2] == c) return true;
+        for (int i = 0; i < fieldSizeX; i++)
+            for (int j = 0; j < fieldSizeY; j++)
+                if (field[i][j] == c)               //находим первый X или О на поле
+                    return checkWinHorizontally(c, i, j) || checkWinVertically(c, i, j) ||
+                            checkWinDiagonally(c, i, j) || checkWinDiagonally(c, i, j) ||
+                            checkWinBackDiagonally(c, i, j);
+        return false;
+    }
 
-        if (field[0][0] == c && field[1][0] == c && field[2][0] == c) return true;
-        if (field[0][1] == c && field[1][1] == c && field[2][1] == c) return true;
-        if (field[0][2] == c && field[1][2] == c && field[2][2] == c) return true;
+    private static boolean checkWinHorizontally(char c, int y, int x) {
+        int streak = 1;                             //длина цепочки из Х или О
+        for (int i = x; i < fieldSizeX; i++){
+            if (streak == winStreak) return true;
+            if (i >=  fieldSizeX - 1) return false;
+            if (streak > winStreak ) return false;
+            if (field[y][i+1] != c ) return false;
+            streak++;
+        }
+        return false;
+    }
 
-        if (field[0][0] == c && field[1][1] == c && field[2][2] == c) return true;
-        if (field[0][2] == c && field[1][1] == c && field[2][0] == c) return true;
+    private static boolean checkWinVertically(char c, int y, int x) {
+        int streak = 1;             //длина цепочки
 
+        for (int i = y; i < fieldSizeY; i++){
+            if (streak == winStreak) return true;
+            if (i >=  fieldSizeY - 1) return false;
+            if (streak > winStreak ) return false;
+            if (field[i+1][x] != c ) return false;
+            streak++;
+        }
+        return false;
+    }
+
+    private static boolean checkWinDiagonally(char c, int y, int x) {
+        int streak = 1;                             //длина цепочки из Х или О
+        int j = y;
+        for (int i = x; i < fieldSizeX; i++){ //прямая диагональ
+            if (streak == winStreak) return true;
+            if ((i >=  fieldSizeX - 1) || (j >=  fieldSizeY - 1)) return false;
+            if (streak > winStreak ) return false;
+            if (field[j+1][i+1] != c ) return false;
+            streak++;
+            j++;
+        }
+        return false;
+    }
+
+    private static boolean checkWinBackDiagonally(char c, int y, int x) {
+        int streak = 1;                             //длина цепочки из Х или О
+        int j = y;
+        for (int i = x; i < fieldSizeX; i--){ //обратная диагональ
+            if (streak == winStreak) return true;
+            if ((i - 1 < 0) || j >=  fieldSizeX - 1) return false;
+            if (streak > winStreak ) return false;
+            if (field[j+1][i-1] != c ) return false;
+            streak++;
+            j++;
+        }
         return false;
     }
 
@@ -96,7 +145,7 @@ public class TicTacToe {
     public static void main(String[] args) {
         initMap();
         printMap();
-//01:25
+
         while(true) {
             humanTurn();
             printMap();
