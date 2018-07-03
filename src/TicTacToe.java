@@ -73,9 +73,9 @@ public class TicTacToe {
         for (int i = 0; i < fieldSizeX; i++)
             for (int j = 0; j < fieldSizeY; j++)
                 if (field[i][j] == c)               //находим первый X или О на поле
-                    return checkWinHorizontally(c, i, j) || checkWinVertically(c, i, j) ||
-                            checkWinDiagonally(c, i, j) || checkWinDiagonally(c, i, j) ||
-                            checkWinBackDiagonally(c, i, j);
+                   // return checkWinHorizontally(c, i, j) || checkWinVertically(c, i, j) ||
+                   //         checkWinDiagonally(c, i, j) || checkWinDiagonally(c, i, j) ||
+                   return checkWinDiagonally(c, i, j);
         return false;
     }
 
@@ -104,7 +104,7 @@ public class TicTacToe {
         return false;
     }
 
-    private static boolean checkWinDiagonally(char c, int y, int x) {
+/*    private static boolean checkWinDiagonally(char c, int y, int x) {
         int streak = 1;                             //длина цепочки из Х или О
         int j = y;
         for (int i = x; i < fieldSizeX; i++){ //прямая диагональ
@@ -128,6 +128,25 @@ public class TicTacToe {
             if (field[j+1][i-1] != c ) return false;
             streak++;
             j++;
+        }
+        return false;
+    }*/
+
+    private static boolean checkWinDiagonally(char c, int y, int x) {
+        int streak = 1;                             //длина цепочки из Х или О;
+        int xRight = x;                             //прямая диагональ
+        int xLeft = x;                              //обратная диагональ
+        for (int i = y; i < fieldSizeY; i++){
+            System.out.println("hello from for");
+            if (streak == winStreak) return true;
+            if (xLeft <= 0 && (field[xRight + 1][i+1] != c )) {System.out.println("Вышли за левую границу"); return false;}
+            if (xRight >=  fieldSizeY - 1 && (field[xLeft - 1][i+1] != c )) {System.out.println("Вышли за правую границу"); return false;}
+            //if (xLeft <= 0 && xRight >=  fieldSizeY - 1) {System.out.println("За границы"); return false;}
+            if (streak > winStreak ) {System.out.println("Превышен стрик"); return false;}
+            if ((field[xRight + 1][i+1] != c )&& (field[xLeft - 1][i+1] != c )) {System.out.println("Ничо не нашли"); return false;}
+            streak++;
+            xLeft--;
+            xRight++;
         }
         return false;
     }
